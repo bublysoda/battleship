@@ -74,7 +74,7 @@ export function placeFleet() {
             deleter++
             noMoreFleet(deleter)
         }
-        noMoreFleet(deleter)
+        if(deleter =! 101)noMoreFleet(deleter)
     }
     }
     if (runThroughs >= 0 && runThroughs <= 4){placeShip(Carrier);
