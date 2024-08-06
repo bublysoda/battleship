@@ -65,14 +65,24 @@ export function placeFleet() {
         if (runThroughs === 9) alert('THE BATTLESHIP HAS BEEN PLACED. MOVING ALONG TO CRUISER');
         if (runThroughs === 12) alert('THE CRUISER HAS BEEN PLACED. MOVING ALONG TO SUBMARINE');
         if (runThroughs === 15) alert('THE SUBMARINE HAS BEEN PLACED. MOVING ALONG TO DESTROYER');
-        if (runThroughs === 17) alert('THE DESTROYER HAS BEEN PLACED. THAT WAS THE LAST SHIP!');
+        if (runThroughs === 17){alert('THE DESTROYER HAS BEEN PLACED. THAT WAS THE LAST SHIP!');
+        let deleter = 1
+        function noMoreFleet(ID){
+            let deleteID = 'L'+ID
+            let buttonBoop = document.getElementById(deleteID)
+            buttonBoop.disable
+            deleter++
+            noMoreFleet(deleter)
+        }
+        noMoreFleet(deleter)
+    }
     }
     if (runThroughs >= 0 && runThroughs <= 4){placeShip(Carrier);
     } else if (runThroughs >= 5 && runThroughs <= 8){placeShip(Battleship);
     } else if (runThroughs >= 9 && runThroughs <= 11){placeShip(Cruiser);
     } else if (runThroughs >= 12 && runThroughs <= 14){placeShip(Submarine);
     } else if (runThroughs >= 15 && runThroughs <= 16){placeShip(Destroyer);
-    } else if (runThroughs == 17){}
+    }
     alertSystem()
 }
 
