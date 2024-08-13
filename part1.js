@@ -22,7 +22,15 @@ export let lastClicked = 0
 
 export let clickHistory = []
 export let coordsWithShips = []
+let shipPlayer = []
+let shipComputer = []
+coordsWithShips.push(shipPlayer)
+coordsWithShips.push(shipComputer)
 export let attackedCoords = []
+let attackPlayer = []
+let attackComputer = []
+attackedCoords.push(attackPlayer)
+attackedCoords.push(attackComputer)
 export let playerCoordsRaw = []
 
 export function Gameboard(shipCoords, hitCoords, player){
@@ -30,8 +38,8 @@ export function Gameboard(shipCoords, hitCoords, player){
     this.hitCoords = hitCoords
     this.player = player
 }
-export const Player = new Gameboard(coordsWithShips, attackedCoords, 1)
-export const Computer = new Gameboard(coordsWithShips, attackedCoords, 0)
+export const Player = new Gameboard(shipPlayer, attackedCoords, 1)
+export const Computer = new Gameboard(shipComputer, attackedCoords, 0)
 
 export let spotsRemaining = 0
 export let runThroughs = 0
@@ -48,9 +56,9 @@ export function placeShip(shipName){
     }
     else{
         shipName.coordsArray.push(futureCoord)
-        let information = {coord: futureCoord, ship: shipName}
+        let realCoord = Number(futureCoord)
+        let information = {coord: realCoord, ship: shipName}
         Player.shipCoords.push(information)
-        console.log(Player.shipCoords)
         let buttonGray = document.getElementById('L'+futureCoord)
         buttonGray.style = "background-color:gray"
         runThroughs++
@@ -58,6 +66,33 @@ export function placeShip(shipName){
 
 }
 
+//This is quite possibly the worst way to do this, but I need to finish this project and move on
+export function computerShipPlace(coord, shipName){
+    let information = {coord: coord, ship: shipName}
+    Computer.shipCoords.push(information)
+}
+
+export function computerFleetPlace(){
+    computerShipPlace(12, Carrier)
+    computerShipPlace(13, Carrier)
+    computerShipPlace(14, Carrier)
+    computerShipPlace(15, Carrier)
+    computerShipPlace(16, Carrier)
+    computerShipPlace(44, Battleship)
+    computerShipPlace(54, Battleship)
+    computerShipPlace(64, Battleship)
+    computerShipPlace(74, Battleship)
+    computerShipPlace(62, Cruiser)
+    computerShipPlace(72, Cruiser)
+    computerShipPlace(82, Cruiser)
+    computerShipPlace(67, Submarine)
+    computerShipPlace(68, Submarine)
+    computerShipPlace(69, Submarine)
+    computerShipPlace(38, Destroyer)
+    computerShipPlace(39, Destroyer)
+    console.log(coordsWithShips)
+    part3.playerAttack()
+}
 
 export function placeFleet() {
     function alertSystem(){
@@ -67,14 +102,17 @@ export function placeFleet() {
         if (runThroughs === 15) alert('THE SUBMARINE HAS BEEN PLACED. MOVING ALONG TO DESTROYER');
         if (runThroughs === 17){alert('THE DESTROYER HAS BEEN PLACED. THAT WAS THE LAST SHIP!');
         let deleter = 1
+        computerFleetPlace()
         function noMoreFleet(ID){
             let deleteID = 'L'+ID
             let buttonBoop = document.getElementById(deleteID)
-            buttonBoop.disable
+            buttonBoop.disabled = true
             deleter++
-            noMoreFleet(deleter)
+            if(deleter == 101){return}
+            else{noMoreFleet(deleter)}
         }
-        if(deleter =! 101)noMoreFleet(deleter)
+        noMoreFleet(deleter)
+        
     }
     }
     if (runThroughs >= 0 && runThroughs <= 4){placeShip(Carrier);
@@ -86,36 +124,45 @@ export function placeFleet() {
     alertSystem()
 }
 
-export function receiveAttack(){
-        
+export function receiveAttack(player, coord){
     let checker = 0
-    let checkLength = coordsWithShips.length
-    let attackCoords = clickedButton
-    if(attackedCoords.includes(attackCoords) == 1){
-        console.log('This has already been attacked!')
-        receiveAttack()
+    let checkLength = coordsWithShips[player].length
+    let attackCoords = Number(coord)
+    console.log(`Someone has attacked ${attackCoords}`)
+    if(attackedCoords[player].includes(attackCoords) == 1){
+        alert('This has already been attacked!  Try again!')
+        return
     }
-    attackedCoords.push(attackCoords)
+    attackedCoords[player].push(attackCoords)
     function checkSpaces(){
-        let hitCoord = coordsWithShips[checker][0]
+        if(checker == 17){
+            console.log('Miss')
+            if(player == 1){part3.computerAttack}
+            else if(player == 0){part3.playerAttack}
+            return
+        }
+        let hitCoord = coordsWithShips[player][checker].coord
         if(hitCoord == attackCoords){
+            console.log('HIT')
             console.log(coordsWithShips)
-            coordsWithShips[checker][1].hits++
-            if(coordsWithShips[checker][1].hits == coordsWithShips[checker][1].length){
-                coordsWithShips[checker][1].sink++
-                console.log('The ship has been destroyed!  Blub, blub, blub!')
+            coordsWithShips[player][checker].ship.hits++
+            if(coordsWithShips[player][checker].ship.hits == coordsWithShips[checker][1].length){
+                coordsWithShips[player][checker].ship.sink++
+                alert('The ship has been destroyed!  Blub, blub, blub!')
             }
+            if(player == 1){part3.computerAttack}
+            else if(player == 0){part3.playerAttack}
         }
         else if(checker == checkLength){
             console.log('ERROR: REFER TO LOOP IN CHECKSPACES FUNCTION')
+            console.log(attackedCoords)
         }
         else{
             console.log(hitCoord)
             checker++
-            console.log
             checkSpaces()
         }
     }
     checkSpaces()
 }
-
+//insert if statements in CheckSpaces to make it switch to whoevers turn it is
